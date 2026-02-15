@@ -1,0 +1,9 @@
+{
+  "development": {
+    "username": "root",
+    "password": "Calcifer.0506",
+    "database": "sistema_salud",
+    "host": "127.0.0.1",
+    "dialect": "mysql"
+  }
+}
