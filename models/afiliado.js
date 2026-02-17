@@ -13,6 +13,7 @@ module.exports = (sequelize, DataTypes) => {
 Afiliado.belongsTo(models.GrupoFamiliar, {
   foreignKey: 'grupo_familiar_id'
 });    }
+
   }
   Afiliado.init({
     nombre: DataTypes.STRING,

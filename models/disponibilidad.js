@@ -9,9 +9,15 @@ module.exports = (sequelize, DataTypes) => {
      * This method is not a part of Sequelize lifecycle.
      * The `models/index` file will call this method automatically.
      */
-    static associate(models) {
-      // define association here
-    }
+   static associate(models) {
+  Disponibilidad.belongsTo(models.Profesional, {
+    foreignKey: "profesional_id"
+  });
+
+  Disponibilidad.hasMany(models.Turno, {
+  foreignKey: 'disponibilidad_id'
+});
+}
   }
   Disponibilidad.init({
     profesional_id: DataTypes.INTEGER,

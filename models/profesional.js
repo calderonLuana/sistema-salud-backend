@@ -12,7 +12,20 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
 Profesional.belongsTo(models.Especialidad, {
   foreignKey: 'especialidad_id'
-});    }
+});   
+
+Profesional.hasMany(models.Disponibilidad, {
+  foreignKey: "profesional_id"
+});
+
+
+Profesional.hasMany(models.Turno, {
+  foreignKey: 'profesional_id'
+});
+
+}
+
+
   }
   Profesional.init({
     nombre: DataTypes.STRING,
