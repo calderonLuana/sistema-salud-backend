@@ -1,39 +1,60 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
+
   class Profesional extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+
     static associate(models) {
-Profesional.belongsTo(models.Especialidad, {
-  foreignKey: 'especialidad_id'
-});   
 
-Profesional.hasMany(models.Disponibilidad, {
-  foreignKey: "profesional_id"
-});
+      Profesional.belongsTo(models.Especialidad, {
+        foreignKey: 'especialidad_id',
+        as: 'especialidad'
+      });
 
+      Profesional.hasMany(models.Disponibilidad, {
+        foreignKey: 'profesional_id',
+        as: 'disponibilidades'
+      });
 
-Profesional.hasMany(models.Turno, {
-  foreignKey: 'profesional_id'
-});
+      Profesional.hasMany(models.Turno, {
+        foreignKey: 'profesional_id',
+        as: 'turnos'
+      });
 
-}
-
+    }
 
   }
+
   Profesional.init({
-    nombre: DataTypes.STRING,
-    matricula: DataTypes.STRING,
-    especialidad_id: DataTypes.INTEGER
+
+    nombre: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
+    matricula: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
+
+    especialidad_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true
+    }
+
   }, {
+
     sequelize,
+
     modelName: 'Profesional',
+
+    tableName: 'Profesionales', 
+
+    timestamps: true 
+
   });
+
   return Profesional;
+
 };

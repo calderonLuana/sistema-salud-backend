@@ -1,21 +1,21 @@
-{
-  "name": "sistema-salud-backend",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-  "dev": "nodemon src/server.js"
-},
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "joi": "^18.0.2",
-    "lodash": "^4.17.23",
-    "mysql2": "^3.17.1",
-    "sequelize": "^6.37.7"
+  {
+    "name": "sistema-salud-backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+    "dev": "nodemon src/server.js"
+  },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+      "dotenv": "^17.3.1",
+      "express": "^5.2.1",
+      "joi": "^18.0.2",
+      "lodash": "^4.17.23",
+      "mysql2": "^3.17.1",
+      "sequelize": "^6.37.7"
+    }
   }
-}
