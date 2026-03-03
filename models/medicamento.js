@@ -4,17 +4,20 @@ const {
 } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-  class Especialidad extends Model {
+  class Medicamento extends Model {
 
     static associate(models) {
-      Especialidad.hasMany(models.Profesional, {
-        foreignKey: 'especialidadId'
+
+      // 1 medicamento puede estar en muchas recetas
+      Medicamento.hasMany(models.Receta, {
+        foreignKey: 'medicamentoId'
       });
+
     }
 
   }
 
-  Especialidad.init({
+  Medicamento.init({
     nombre: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -23,8 +26,8 @@ module.exports = (sequelize, DataTypes) => {
 
   }, {
     sequelize,
-    modelName: 'Especialidad',
+    modelName: 'Medicamento',
   });
 
-  return Especialidad;
+  return Medicamento;
 };

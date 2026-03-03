@@ -1,69 +1,59 @@
 'use strict';
-const { Model } = require('sequelize');
+const {
+  Model
+} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Turno extends Model {
+
     static associate(models) {
 
-      Turno.belongsTo(models.Afiliado, {
-        foreignKey: {
-          name: 'afiliado_id',
-          allowNull: false
-        }
-      });
-
-      Turno.belongsTo(models.Profesional, {
-        foreignKey: {
-          name: 'profesional_id',
-          allowNull: false
-        }
-      });
-
+      // 1 ─── 1 con Disponibilidad
       Turno.belongsTo(models.Disponibilidad, {
-        foreignKey: {
-          name: 'disponibilidad_id',
-          allowNull: false
-        }
+        foreignKey: 'disponibilidadId'
+      });
+
+      // Relación con Afiliado (solicitante)
+      Turno.belongsTo(models.Afiliado, {
+        foreignKey: 'solicitanteId',
+        as: 'solicitante'
+      });
+
+      // Relación con Afiliado (paciente)
+      Turno.belongsTo(models.Afiliado, {
+        foreignKey: 'pacienteId',
+        as: 'paciente'
       });
 
     }
+
   }
 
   Turno.init({
-    afiliado_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-
-    profesional_id: {
-      type: DataTypes.INTEGER,
-      allowNull: false
-    },
-
-    disponibilidad_id: {
+    disponibilidadId: {
       type: DataTypes.INTEGER,
       allowNull: false,
-      unique: true  
+      unique: true
     },
 
-    fecha: {
-      type: DataTypes.DATE,
+    solicitanteId: {
+      type: DataTypes.INTEGER,
+      allowNull: false
+    },
+
+    pacienteId: {
+      type: DataTypes.INTEGER,
       allowNull: false
     },
 
     estado: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      defaultValue: 'pendiente',
-      validate: {
-       isIn: [['pendiente', 'confirmado', 'cancelado', 'completado', 'ausente']]
-      }
+      type: DataTypes.ENUM('RESERVADO', 'CANCELADO'),
+      defaultValue: 'RESERVADO'
     }
 
   }, {
     sequelize,
     modelName: 'Turno',
-    tableName: 'Turnos'
   });
 
   return Turno;

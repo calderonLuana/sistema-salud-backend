@@ -274,9 +274,9 @@
 
   module.exports = {
     crearTurno,
-    confirmarTurno,
-    completarTurno,
-    marcarAusente,
+    confirmarTurno, //solo para pruebas
+    completarTurno, //solo para pruebas
+    marcarAusente, //solo para pruebas
     cancelarTurno,
     getTurnos,
     getTurnoById

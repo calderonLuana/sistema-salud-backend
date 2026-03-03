@@ -1,25 +1,21 @@
 'use strict';
-const { Model } = require('sequelize');
+const {
+  Model
+} = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
-
   class Profesional extends Model {
 
     static associate(models) {
 
+      // Profesional pertenece a Especialidad
       Profesional.belongsTo(models.Especialidad, {
-        foreignKey: 'especialidad_id',
-        as: 'especialidad'
+        foreignKey: 'especialidadId'
       });
 
+      // Profesional 1 ─── N Disponibilidad
       Profesional.hasMany(models.Disponibilidad, {
-        foreignKey: 'profesional_id',
-        as: 'disponibilidades'
-      });
-
-      Profesional.hasMany(models.Turno, {
-        foreignKey: 'profesional_id',
-        as: 'turnos'
+        foreignKey: 'profesionalId'
       });
 
     }
@@ -27,34 +23,25 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Profesional.init({
-
     nombre: {
       type: DataTypes.STRING,
       allowNull: false
     },
 
-    matricula: {
+    apellido: {
       type: DataTypes.STRING,
       allowNull: false
     },
 
-    especialidad_id: {
+    especialidadId: {
       type: DataTypes.INTEGER,
-      allowNull: true
+      allowNull: false
     }
 
   }, {
-
     sequelize,
-
     modelName: 'Profesional',
-
-    tableName: 'Profesionales', 
-
-    timestamps: true 
-
   });
 
   return Profesional;
-
 };
