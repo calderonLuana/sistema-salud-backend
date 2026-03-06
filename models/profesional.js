@@ -8,12 +8,10 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
 
-      // Profesional pertenece a Especialidad
       Profesional.belongsTo(models.Especialidad, {
         foreignKey: 'especialidadId'
       });
 
-      // Profesional 1 ─── N Disponibilidad
       Profesional.hasMany(models.Disponibilidad, {
         foreignKey: 'profesionalId'
       });

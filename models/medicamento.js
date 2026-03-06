@@ -8,7 +8,6 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
 
-      // 1 medicamento puede estar en muchas recetas
       Medicamento.hasMany(models.Receta, {
         foreignKey: 'medicamentoId'
       });

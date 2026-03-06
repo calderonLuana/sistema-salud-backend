@@ -8,18 +8,15 @@ module.exports = (sequelize, DataTypes) => {
 
     static associate(models) {
 
-      // 1 ─── 1 con Disponibilidad
       Turno.belongsTo(models.Disponibilidad, {
         foreignKey: 'disponibilidadId'
       });
 
-      // Relación con Afiliado (solicitante)
       Turno.belongsTo(models.Afiliado, {
         foreignKey: 'solicitanteId',
         as: 'solicitante'
       });
 
-      // Relación con Afiliado (paciente)
       Turno.belongsTo(models.Afiliado, {
         foreignKey: 'pacienteId',
         as: 'paciente'
