@@ -13,14 +13,20 @@ async function registro(req, res) {
     }
 
     const afiliado = await Afiliado.findOne({
-      where: { dni }
-    })
+  where: { dni }
+})
 
-    if (!afiliado) {
-      return res.status(404).json({
-        error: "Afiliado no encontrado"
-      })
-    }
+if (!afiliado) {
+  return res.status(404).json({
+    error: "Afiliado no encontrado"
+  })
+}
+
+if (afiliado.registrado) {
+  return res.status(400).json({
+    error: "El afiliado ya está registrado"
+  })
+}
 
     await afiliadoService.validarRegistro(afiliado.id)
 
@@ -75,10 +81,15 @@ async function login(req, res) {
       })
     }
 
-    res.json({
-      message: "Login correcto",
-      afiliado
-    })
+   res.json({
+  message: "Login correcto",
+  afiliado: {
+    id: afiliado.id,
+    nombre: afiliado.nombre,
+    dni: afiliado.dni,
+    grupoFamiliarId: afiliado.grupoFamiliarId
+  }
+})
 
   } catch (error) {
 
@@ -122,23 +133,14 @@ async function obtenerGrupoFamiliar(req, res) {
 
     const { id } = req.params
 
-    const afiliado = await Afiliado.findByPk(id)
+   const afiliado = await Afiliado.findByPk(id, {
+  include: {
+    model: GrupoFamiliar,
+    include: Afiliado
+  }
+})
 
-    if (!afiliado) {
-      return res.status(404).json({
-        error: "Afiliado no encontrado"
-      })
-    }
-
-    const grupo = await GrupoFamiliar.findByPk(
-      afiliado.grupoFamiliarId,
-      {
-        include: Afiliado
-      }
-    )
-
-    res.json(grupo)
-
+res.json(afiliado.GrupoFamiliar)
   } catch (error) {
 
     res.status(500).json({

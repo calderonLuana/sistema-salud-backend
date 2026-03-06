@@ -55,6 +55,7 @@ async function verificarPermisoGestion(solicitanteId, pacienteId) {
     throw new Error("Afiliado no encontrado")
   }
 
+  // gestion de sí mismo
   if (solicitante.id === paciente.id) {
     return true
   }
@@ -65,7 +66,8 @@ async function verificarPermisoGestion(solicitanteId, pacienteId) {
 
   const edadPaciente = calcularEdad(paciente.fechaNacimiento)
 
-  if (edadPaciente < 18 && solicitante.tipo !== "hijo") {
+  // adultos pueden gestionar menores
+  if (edadPaciente < 18 && solicitante.tipo === "titular") {
     return true
   }
 
@@ -73,6 +75,7 @@ async function verificarPermisoGestion(solicitanteId, pacienteId) {
 }
 
 module.exports = {
+  calcularEdad,
   validarAfiliadoActivo,
   validarRegistro,
   verificarPermisoGestion

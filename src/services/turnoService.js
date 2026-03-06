@@ -1,11 +1,15 @@
 const { Turno, Disponibilidad } = require("../../models")
 const afiliadoService = require("./afiliadoService")
+const { Op } = require("sequelize")
 
 async function crearTurno(solicitanteId, pacienteId, disponibilidadId) {
 
   await afiliadoService.validarAfiliadoActivo(solicitanteId)
 
-  await afiliadoService.verificarPermisoGestion(solicitanteId, pacienteId)
+  await afiliadoService.verificarPermisoGestion(
+    solicitanteId,
+    pacienteId
+  )
 
   const disponibilidad = await Disponibilidad.findByPk(disponibilidadId)
 
@@ -44,7 +48,9 @@ async function cancelarTurno(turnoId, afiliadoId) {
     turno.pacienteId
   )
 
-  const disponibilidad = await Disponibilidad.findByPk(turno.disponibilidadId)
+  const disponibilidad = await Disponibilidad.findByPk(
+    turno.disponibilidadId
+  )
 
   const fechaTurno = new Date(disponibilidad.fecha)
   const ahora = new Date()
@@ -62,7 +68,52 @@ async function cancelarTurno(turnoId, afiliadoId) {
   return turno
 }
 
+async function obtenerTurnosProximos(pacienteId) {
+
+  const ahora = new Date()
+
+  const turnos = await Turno.findAll({
+    where: {
+      pacienteId,
+      estado: "reservado"
+    },
+    include: {
+      model: Disponibilidad,
+      where: {
+        fecha: {
+          [Op.gte]: ahora
+        }
+      }
+    }
+  })
+
+  return turnos
+}
+
+async function obtenerTurnosAnteriores(pacienteId) {
+
+  const ahora = new Date()
+
+  const turnos = await Turno.findAll({
+    where: {
+      pacienteId
+    },
+    include: {
+      model: Disponibilidad,
+      where: {
+        fecha: {
+          [Op.lt]: ahora
+        }
+      }
+    }
+  })
+
+  return turnos
+}
+
 module.exports = {
   crearTurno,
-  cancelarTurno
+  cancelarTurno,
+  obtenerTurnosProximos,
+  obtenerTurnosAnteriores
 }

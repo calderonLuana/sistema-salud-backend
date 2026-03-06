@@ -6,26 +6,26 @@ async function crearReceta(solicitanteId, pacienteId, medicamentoId, datosReceta
 
   await afiliadoService.validarAfiliadoActivo(solicitanteId)
 
-  await afiliadoService.verificarPermisoGestion(solicitanteId, pacienteId)
-
-  const inicioMes = new Date()
-  inicioMes.setDate(1)
-  inicioMes.setHours(0,0,0,0)
+  await afiliadoService.verificarPermisoGestion(
+    solicitanteId,
+    pacienteId
+  )
 
   const recetaPendiente = await Receta.findOne({
     where: {
       pacienteId,
       medicamentoId,
-      estado: "PENDIENTE",
-      fechaSolicitud: {
-        [Op.gte]: inicioMes
-      }
+      estado: "PENDIENTE"
     }
   })
 
   if (recetaPendiente) {
     throw new Error("Ya existe una receta pendiente para este medicamento")
   }
+
+  const inicioMes = new Date()
+  inicioMes.setDate(1)
+  inicioMes.setHours(0,0,0,0)
 
   const recetasMes = await Receta.count({
     where: {
@@ -57,16 +57,21 @@ async function crearReceta(solicitanteId, pacienteId, medicamentoId, datosReceta
     throw new Error("Máximo 13 recetas por año para este medicamento")
   }
 
-  return Receta.create({
+  const receta = await Receta.create({
     solicitanteId,
     pacienteId,
     medicamentoId,
     ...datosReceta,
     estado: "PENDIENTE"
   })
+
+  return receta
 }
 
-async function renovarReceta(recetaId, solicitanteId, datosRenovacion) {
+
+//Consultar ya que si no puede renovar no es necesario el mensaje ya que no va a poder acceder.
+
+async function renovarReceta(recetaId, solicitanteId, datos) {
 
   const receta = await Receta.findByPk(recetaId)
 
@@ -85,15 +90,19 @@ async function renovarReceta(recetaId, solicitanteId, datosRenovacion) {
     throw new Error("Solo se pueden renovar recetas aprobadas")
   }
 
-  const fechaRenovacion = new Date(receta.fechaSolicitud)
-  fechaRenovacion.setMonth(fechaRenovacion.getMonth() + 1)
+  const hoy = new Date()
+  const fechaReceta = new Date(receta.fechaSolicitud)
 
-  if (new Date() < fechaRenovacion) {
+  const diferenciaMeses =
+    (hoy.getFullYear() - fechaReceta.getFullYear()) * 12 +
+    (hoy.getMonth() - fechaReceta.getMonth())
+
+  if (diferenciaMeses < 1) {
     throw new Error("La receta solo puede renovarse después de 1 mes")
   }
 
-  receta.cantidad = datosRenovacion.cantidad ?? receta.cantidad
-  receta.observaciones = datosRenovacion.observaciones ?? receta.observaciones
+  receta.cantidad = datos.cantidad ?? receta.cantidad
+  receta.observaciones = datos.observaciones ?? receta.observaciones
 
   receta.estado = "PENDIENTE"
   receta.fechaSolicitud = new Date()
@@ -103,14 +112,14 @@ async function renovarReceta(recetaId, solicitanteId, datosRenovacion) {
   return receta
 }
 
-async function obtenerRecetasAfiliado(afiliadoId) {
+async function obtenerRecetasAfiliado(pacienteId) {
 
-  return Receta.findAll({
-    where: {
-      pacienteId: afiliadoId
-    },
+  const recetas = await Receta.findAll({
+    where: { pacienteId },
     order: [["fechaSolicitud", "DESC"]]
   })
+
+  return recetas
 }
 
 async function obtenerRecetaPorId(recetaId) {
