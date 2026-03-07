@@ -47,6 +47,24 @@ if (afiliado.registrado) {
 }
 
 
+async function listarAfiliados(req, res) {
+
+  try {
+
+    const afiliados = await Afiliado.findAll()
+
+    res.json(afiliados)
+
+  } catch (error) {
+
+    res.status(500).json({
+      error: error.message
+    })
+
+  }
+
+}
+
 async function login(req, res) {
 
   try {
@@ -69,11 +87,11 @@ async function login(req, res) {
       })
     }
 
-    if (!afiliado.activo) {
-      return res.status(403).json({
-        error: "Afiliado inactivo"
-      })
-    }
+  if (afiliado.estado !== "ACTIVO") {
+  return res.status(403).json({
+    error: "Afiliado inactivo"
+  })
+}
 
     if (afiliado.password !== password) {
       return res.status(401).json({
@@ -155,5 +173,7 @@ module.exports = {
   registro,
   login,
   obtenerAfiliado,
-  obtenerGrupoFamiliar
+  obtenerGrupoFamiliar,
+  listarAfiliados
+  
 }

@@ -22,9 +22,9 @@ async function validarAfiliadoActivo(afiliadoId) {
     throw new Error("Afiliado no existe")
   }
 
-  if (!afiliado.activo) {
-    throw new Error("Afiliado inactivo")
-  }
+if (afiliado.estado !== "ACTIVO") {
+  throw new Error("Afiliado inactivo")
+}
 
   return afiliado
 }
