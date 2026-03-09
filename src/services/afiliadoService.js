@@ -55,7 +55,12 @@ async function verificarPermisoGestion(solicitanteId, pacienteId) {
     throw new Error("Afiliado no encontrado")
   }
 
-  // gestion de sí mismo
+  const edadSolicitante = calcularEdad(solicitante.fechaNacimiento)
+
+  if (edadSolicitante < 18) {
+    throw new Error("Los afiliados menores de 18 no pueden gestionar operaciones")
+  }
+
   if (solicitante.id === paciente.id) {
     return true
   }
@@ -66,8 +71,10 @@ async function verificarPermisoGestion(solicitanteId, pacienteId) {
 
   const edadPaciente = calcularEdad(paciente.fechaNacimiento)
 
-  // adultos pueden gestionar menores
-  if (edadPaciente < 18 && solicitante.tipo === "titular") {
+  if (
+    edadPaciente < 18 &&
+    (solicitante.tipoAfiliado === "TITULAR" || solicitante.tipoAfiliado === "CONYUGE")
+  ) {
     return true
   }
 

@@ -1,16 +1,10 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
+
   class Receta extends Model {
-
     static associate(models) {
-
-      Receta.belongsTo(models.Medicamento, {
-        foreignKey: 'medicamentoId'
-      });
 
       Receta.belongsTo(models.Afiliado, {
         foreignKey: 'solicitanteId',
@@ -22,8 +16,12 @@ module.exports = (sequelize, DataTypes) => {
         as: 'paciente'
       });
 
-    }
+      Receta.belongsTo(models.Medicamento, {
+        foreignKey: 'medicamentoId',
+        as: 'medicamento'
+      });
 
+    }
   }
 
   Receta.init({
@@ -59,8 +57,7 @@ module.exports = (sequelize, DataTypes) => {
     },
 
     observaciones: {
-      type: DataTypes.TEXT,
-      allowNull: true
+      type: DataTypes.TEXT
     },
 
     estado: {
@@ -76,6 +73,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Receta',
+    tableName: 'recetas'
   });
 
   return Receta;
