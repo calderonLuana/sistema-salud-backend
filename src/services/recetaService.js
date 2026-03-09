@@ -11,6 +11,12 @@ async function crearReceta(solicitanteId, pacienteId, medicamentoId, datosReceta
     pacienteId
   )
 
+const medicamento = await Medicamento.findByPk(medicamentoId)
+
+if (!medicamento) {
+  throw new Error("Medicamento no existe")
+}
+
   const recetaPendiente = await Receta.findOne({
     where: {
       pacienteId,
