@@ -16,11 +16,10 @@ module.exports = (sequelize, DataTypes) => {
         as: 'paciente'
       });
 
-      Receta.belongsTo(models.Medicamento, {
-        foreignKey: 'medicamentoId',
-        as: 'medicamento'
-      });
-
+    Receta.belongsTo(models.Medicamento, {
+  foreignKey: 'medicamentoId',
+  as: 'medicamento'
+});
     }
   }
 

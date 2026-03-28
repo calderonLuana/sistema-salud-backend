@@ -1,20 +1,9 @@
-const { Disponibilidad, Turno } = require("../../models")
+const { Disponibilidad } = require("../../models")
 
 async function obtenerDisponibilidadesLibres() {
-
-  const disponibilidades = await Disponibilidad.findAll()
-
-  const turnos = await Turno.findAll({
-    attributes: ["disponibilidadId"]
+  return await Disponibilidad.findAll({
+    where: { estado: "DISPONIBLE" }
   })
-
-  const ocupadas = turnos.map(t => t.disponibilidadId)
-
-  const libres = disponibilidades.filter(
-    d => !ocupadas.includes(d.id)
-  )
-
-  return libres
 }
 
 module.exports = {

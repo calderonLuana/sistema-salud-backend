@@ -2,13 +2,42 @@ const express = require("express")
 const router = express.Router()
 
 const afiliadoController = require("../controllers/afiliadoController")
+const validateSchema = require("../middlewares/validateSchema")
+const {
+  registroSchema,
+  loginSchema
+} = require("../schemas/afiliadoSchema")
 
-router.get("/", afiliadoController.listarAfiliados)
+// REGISTRO
+router.post(
+  "/registro",
+  validateSchema(registroSchema),
+  afiliadoController.registro
+)
 
-router.post("/registro", afiliadoController.registro)
-router.post("/login", afiliadoController.login)
+// LOGIN
+router.post(
+  "/login",
+  validateSchema(loginSchema),
+  afiliadoController.login
+)
 
-router.get("/:id/grupo", afiliadoController.obtenerGrupoFamiliar)
-router.get("/:id", afiliadoController.obtenerAfiliado)
+// GRUPO FAMILIAR (antes que :id)
+router.get(
+  "/grupo/:id",
+  afiliadoController.obtenerGrupoFamiliar
+)
+
+// LISTAR
+router.get(
+  "/",
+  afiliadoController.listarAfiliados
+)
+
+// OBTENER UNO
+router.get(
+  "/:id",
+  afiliadoController.obtenerAfiliado
+)
 
 module.exports = router

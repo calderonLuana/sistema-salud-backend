@@ -5,6 +5,7 @@ const { Op } = require("sequelize")
 async function crearTurno(solicitanteId, pacienteId, disponibilidadId) {
 
   await afiliadoService.validarAfiliadoActivo(solicitanteId)
+  await afiliadoService.validarAfiliadoActivo(pacienteId)
 
   await afiliadoService.verificarPermisoGestion(
     solicitanteId,
@@ -17,6 +18,11 @@ async function crearTurno(solicitanteId, pacienteId, disponibilidadId) {
     throw new Error("Disponibilidad no existe")
   }
 
+  if (disponibilidad.estado === "RESERVADA") {
+    throw new Error("La disponibilidad ya está reservada")
+  }
+
+  // Validar turno existente (doble seguridad)
   const turnoExistente = await Turno.findOne({
     where: { disponibilidadId }
   })
@@ -29,8 +35,11 @@ async function crearTurno(solicitanteId, pacienteId, disponibilidadId) {
     solicitanteId,
     pacienteId,
     disponibilidadId,
-    estado: "reservado"
+    estado: "RESERVADO"
   })
+
+  disponibilidad.estado = "RESERVADA"
+  await disponibilidad.save()
 
   return turno
 }
@@ -61,9 +70,11 @@ async function cancelarTurno(turnoId, afiliadoId) {
     throw new Error("No se puede cancelar con menos de 24 horas")
   }
 
-  turno.estado = "cancelado"
-
+  turno.estado = "CANCELADO"
   await turno.save()
+
+  disponibilidad.estado = "DISPONIBLE"
+  await disponibilidad.save()
 
   return turno
 }
@@ -75,7 +86,7 @@ async function obtenerTurnosProximos(pacienteId) {
   const turnos = await Turno.findAll({
     where: {
       pacienteId,
-      estado: "reservado"
+      estado: "RESERVADO"
     },
     include: {
       model: Disponibilidad,

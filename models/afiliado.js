@@ -75,11 +75,11 @@ Afiliado.hasMany(models.Receta, {
       type: DataTypes.BOOLEAN,
       defaultValue: false
     },
-
-    password: {
-      type: DataTypes.STRING,
-      allowNull: true
-    }
+    
+password: {
+  type: DataTypes.STRING,
+  allowNull: true
+}
 
   }, {
     sequelize,

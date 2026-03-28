@@ -46,6 +46,15 @@ async function validarRegistro(afiliadoId) {
   return afiliado
 }
 
+async function validarDniUnico(dni) {
+  const existente = await Afiliado.findOne({ where: { dni } })
+
+  if (existente) {
+    throw new Error("El DNI ya está registrado")
+  }
+}
+
+
 async function verificarPermisoGestion(solicitanteId, pacienteId) {
 
   const solicitante = await Afiliado.findByPk(solicitanteId)
@@ -85,5 +94,6 @@ module.exports = {
   calcularEdad,
   validarAfiliadoActivo,
   validarRegistro,
-  verificarPermisoGestion
+  verificarPermisoGestion,
+  validarDniUnico
 }

@@ -174,6 +174,6 @@ module.exports = {
   login,
   obtenerAfiliado,
   obtenerGrupoFamiliar,
-  listarAfiliados
-  
+  listarAfiliados,  
 }
+
