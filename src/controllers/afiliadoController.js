@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken")
+const bcrypt = require("bcryptjs")
 const { Afiliado, GrupoFamiliar } = require("../../models")
 const afiliadoService = require("../services/afiliadoService")
 
@@ -30,7 +32,9 @@ if (afiliado.registrado) {
 
     await afiliadoService.validarRegistro(afiliado.id)
 
-    afiliado.password = password
+    const hashedPassword = await bcrypt.hash(password, 10)
+    
+    afiliado.password = hashedPassword
     afiliado.registrado = true
 
     await afiliado.save()
@@ -87,27 +91,42 @@ async function login(req, res) {
       })
     }
 
-  if (afiliado.estado !== "ACTIVO") {
-  return res.status(403).json({
-    error: "Afiliado inactivo"
-  })
-}
+    if (afiliado.estado !== "ACTIVO") {
+      return res.status(403).json({
+        error: "Afiliado inactivo"
+      })
+    }
 
-    if (afiliado.password !== password) {
+    // 🔐 comparar password
+    const passwordValida = await bcrypt.compare(password, afiliado.password)
+
+    if (!passwordValida) {
       return res.status(401).json({
         error: "Contraseña incorrecta"
       })
     }
 
-   res.json({
-  message: "Login correcto",
-  afiliado: {
-    id: afiliado.id,
-    nombre: afiliado.nombre,
-    dni: afiliado.dni,
-    grupoFamiliarId: afiliado.grupoFamiliarId
-  }
-})
+    // 🔐 generar token
+    const token = jwt.sign(
+      {
+        id: afiliado.id,
+        tipo: afiliado.tipoAfiliado
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES
+      }
+    )
+
+    res.json({
+      message: "Login correcto",
+      token,
+      afiliado: {
+        id: afiliado.id,
+        nombre: afiliado.nombre,
+        dni: afiliado.dni
+      }
+    })
 
   } catch (error) {
 
@@ -117,7 +136,6 @@ async function login(req, res) {
 
   }
 }
-
 
 async function obtenerAfiliado(req, res) {
 

@@ -3,7 +3,8 @@ const turnoService = require("../services/turnoService")
 async function crearTurno(req, res) {
   try {
 
-    const { solicitanteId, pacienteId, disponibilidadId } = req.body
+    const solicitanteId = req.user.id
+    const { pacienteId, disponibilidadId } = req.body
 
     const turno = await turnoService.crearTurno(
       solicitanteId,
@@ -22,7 +23,7 @@ async function cancelarTurno(req, res) {
   try {
 
     const { id } = req.params
-    const { afiliadoId } = req.body
+    const afiliadoId = req.user.id
 
     const turno = await turnoService.cancelarTurno(
       id,

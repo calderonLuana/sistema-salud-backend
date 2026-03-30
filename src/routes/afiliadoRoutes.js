@@ -3,6 +3,8 @@ const router = express.Router()
 
 const afiliadoController = require("../controllers/afiliadoController")
 const validateSchema = require("../middlewares/validateSchema")
+const authMiddleware = require("../middlewares/authMiddleware")
+
 const {
   registroSchema,
   loginSchema

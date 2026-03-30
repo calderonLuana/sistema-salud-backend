@@ -3,7 +3,8 @@ const recetaService = require("../services/recetaService")
 async function crearReceta(req, res) {
   try {
 
-    const { solicitanteId, pacienteId, medicamentoId, ...datos } = req.body
+    const solicitanteId = req.user.id
+    const { pacienteId, medicamentoId, ...datos } = req.body
 
     const receta = await recetaService.crearReceta(
       solicitanteId,
@@ -23,7 +24,8 @@ async function renovarReceta(req, res) {
   try {
 
     const { id } = req.params
-    const { solicitanteId, ...datos } = req.body
+    const solicitanteId = req.user.id
+    const { ...datos } = req.body
 
     const receta = await recetaService.renovarReceta(
       id,
