@@ -29,8 +29,14 @@ if (afiliado.registrado) {
     error: "El afiliado ya está registrado"
   })
 }
-
-    await afiliadoService.validarRegistro(afiliado.id)
+// Se corrigio validacion de edad
+    try {
+  await afiliadoService.validarRegistro(afiliado.id)
+} catch (error) {
+  return res.status(400).json({
+    error: error.message
+  })
+}
 
     const hashedPassword = await bcrypt.hash(password, 10)
     
@@ -97,7 +103,7 @@ async function login(req, res) {
       })
     }
 
-    // 🔐 comparar password
+    //que coincidan las contraseñas 
     const passwordValida = await bcrypt.compare(password, afiliado.password)
 
     if (!passwordValida) {
@@ -106,7 +112,7 @@ async function login(req, res) {
       })
     }
 
-    // 🔐 generar token
+    //generar token
     const token = jwt.sign(
       {
         id: afiliado.id,

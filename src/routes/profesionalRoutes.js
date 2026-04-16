@@ -3,6 +3,8 @@ const router = express.Router()
 
 const profesionalController = require("../controllers/profesionalController")
 const validateSchema = require("../middlewares/validateSchema")
+const authMiddleware = require("../middlewares/authMiddleware")
+
 const {
   createProfesionalSchema
 } = require("../schemas/profesionalSchema")

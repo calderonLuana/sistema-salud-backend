@@ -3,6 +3,8 @@ const router = express.Router()
 
 const disponibilidadController = require("../controllers/disponibilidadController")
 const validateSchema = require("../middlewares/validateSchema")
+const authMiddleware = require("../middlewares/authMiddleware")
+
 const {
   createDisponibilidadSchema
 } = require("../schemas/disponibilidadSchema")

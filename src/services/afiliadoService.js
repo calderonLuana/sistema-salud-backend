@@ -38,6 +38,8 @@ async function validarRegistro(afiliadoId) {
   }
 
   const edad = calcularEdad(afiliado.fechaNacimiento)
+  console.log("Fecha nacimiento:", afiliado.fechaNacimiento)
+  console.log("Edad calculada:", edad)
 
   if (edad < 16) {
     throw new Error("Debe tener al menos 16 años para registrarse")

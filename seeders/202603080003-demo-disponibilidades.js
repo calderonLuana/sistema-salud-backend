@@ -15,7 +15,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-
       {
         id: 2,
         profesionalId: 1,
@@ -26,13 +25,44 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       },
-
       {
         id: 3,
         profesionalId: 2,
         fecha: '2026-03-21',
         hora: '09:00',
         lugar: 'Consultorio 3',
+        estado: 'DISPONIBLE',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+
+      
+      {
+        id: 4,
+        profesionalId: 1,
+        fecha: '2026-05-10',
+        hora: '10:00',
+        lugar: 'Consultorio 1',
+        estado: 'DISPONIBLE',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 5,
+        profesionalId: 1,
+        fecha: '2026-05-10',
+        hora: '11:00',
+        lugar: 'Consultorio 1',
+        estado: 'DISPONIBLE',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 6,
+        profesionalId: 2,
+        fecha: '2026-05-11',
+        hora: '09:00',
+        lugar: 'Consultorio 2',
         estado: 'DISPONIBLE',
         createdAt: new Date(),
         updatedAt: new Date()

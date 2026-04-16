@@ -46,7 +46,7 @@ module.exports = {
         nombre: "Pedro",
         apellido: "Perez",
         dni: "45111222",
-        fechaNacimiento: new Date("2010-03-01"),
+        fechaNacimiento: new Date("2012-05-01"), 
         tipoAfiliado: "HIJO",
         estado: "ACTIVO",
         registrado: false,
@@ -55,7 +55,6 @@ module.exports = {
         createdAt: new Date(),
         updatedAt: new Date()
       }
-
     ]);
 
   },

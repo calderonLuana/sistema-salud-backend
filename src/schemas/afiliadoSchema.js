@@ -6,12 +6,9 @@ const ESTADOS = ["ACTIVO", "INACTIVO"]
 
 // REGISTRO (crear credenciales, no afiliado)
 const registroSchema = Joi.object({
-  afiliadoId: Joi.number().integer().required(),
-
-  password: Joi.string()
-    .min(6)
-    .max(50)
-    .required()
+  dni: Joi.string().required(),
+  password: Joi.string().min(4).required(),
+  confirmarPassword: Joi.string().required()
 })
 
 // LOGIN

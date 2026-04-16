@@ -3,7 +3,7 @@ const router = express.Router()
 
 const recetaController = require("../controllers/recetaController")
 const validateSchema = require("../middlewares/validateSchema")
-const authMiddleware = require("../middlewares/validateSchema")
+const authMiddleware = require("../middlewares/authMiddleware")
 
 const {
   createRecetaSchema,
