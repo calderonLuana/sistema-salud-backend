@@ -267,9 +267,12 @@ GET  /recetas
 GET  /recetas/:id
 ```
 
+---
 
-## Autora
+## 👩‍💻 Autora
 
 **Luana Calderón**
 
 Proyecto desarrollado como parte de mi portfolio de desarrollo backend.
+
+Su diseño y desarrollo fueron realizados de forma personal, aplicando y ampliando los conocimientos adquiridos durante la carrera, especialmente en la materia **Desarrollo de Aplicaciones**, junto con otros conceptos incorporados a lo largo de mi formación académica.
