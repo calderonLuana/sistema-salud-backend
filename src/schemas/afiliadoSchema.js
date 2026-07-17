@@ -4,14 +4,14 @@ const Joi = require("joi")
 const TIPOS = ["TITULAR", "CONYUGE", "HIJO"]
 const ESTADOS = ["ACTIVO", "INACTIVO"]
 
-// REGISTRO (crear credenciales, no afiliado)
+// Registro (crear credenciales, no afiliado)
 const registroSchema = Joi.object({
   dni: Joi.string().required(),
   password: Joi.string().min(4).required(),
   confirmarPassword: Joi.string().required()
 })
 
-// LOGIN
+// Login
 const loginSchema = Joi.object({
   dni: Joi.string()
     .pattern(/^[0-9]{7,8}$/)
@@ -21,7 +21,7 @@ const loginSchema = Joi.object({
     .required()
 })
 
-// CREACIÓN (solo si lo usás para testing)
+// Creacion (solo para pruebas)
 const createAfiliadoSchema = Joi.object({
   grupoFamiliarId: Joi.number().integer().required(),
 
@@ -44,7 +44,7 @@ const createAfiliadoSchema = Joi.object({
     .default("ACTIVO")
 })
 
-// UPDATE (opcional)
+// Update (por el momento opcional)
 const updateAfiliadoSchema = Joi.object({
   nombre: Joi.string().min(2).max(50),
   apellido: Joi.string().min(2).max(50),

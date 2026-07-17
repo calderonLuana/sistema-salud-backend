@@ -5,13 +5,13 @@ const medicamentoController = require("../controllers/medicamentoController")
 const validateSchema = require("../middlewares/validateSchema")
 const authMiddleware = require("../middlewares/authMiddleware")
 
-// Listar todos
+//Traer todos
 router.get(
   "/",
   medicamentoController.listarMedicamentos
 )
 
-// Obtener uno
+//Traer uno 
 router.get(
   "/:id",
   medicamentoController.obtenerMedicamento

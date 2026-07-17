@@ -10,7 +10,7 @@ const {
   cancelarTurnoSchema
 } = require("../schemas/turnoSchema")
 
-// CREAR
+//Crear turno 
 router.post(
   "/",
   authMiddleware,
@@ -18,7 +18,7 @@ router.post(
   turnoController.crearTurno
 )
 
-// CANCELAR
+//Cancelar turno
 router.delete(
   "/:id",
   authMiddleware,
@@ -26,7 +26,7 @@ router.delete(
   turnoController.cancelarTurno
 )
 
-// PROTEGIDOS TAMBIÉN
+//Consultar
 router.get(
   "/proximos/:pacienteId",
   authMiddleware,

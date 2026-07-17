@@ -10,7 +10,7 @@ const {
   renovarRecetaSchema
 } = require("../schemas/recetaSchema")
 
-// CREAR
+//Crear nueva receta
 router.post(
   "/",
   authMiddleware,
@@ -18,7 +18,7 @@ router.post(
   recetaController.crearReceta
 )
 
-// RENOVAR
+//Rnovar segun criterios
 router.put(
   "/renovar/:id",
   authMiddleware,
@@ -26,7 +26,7 @@ router.put(
   recetaController.renovarReceta
 )
 
-// CONSULTAS
+//Consultas
 router.get(
   "/afiliado/:pacienteId",
   authMiddleware,

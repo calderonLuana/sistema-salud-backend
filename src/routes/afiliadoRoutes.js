@@ -10,33 +10,33 @@ const {
   loginSchema
 } = require("../schemas/afiliadoSchema")
 
-// REGISTRO
+// Registro
 router.post(
   "/registro",
   validateSchema(registroSchema),
   afiliadoController.registro
 )
 
-// LOGIN
+// Login
 router.post(
   "/login",
   validateSchema(loginSchema),
   afiliadoController.login
 )
 
-// GRUPO FAMILIAR (antes que :id)
+// Traer grupo familiar
 router.get(
   "/grupo/:id",
   afiliadoController.obtenerGrupoFamiliar
 )
 
-// LISTAR
+// Traer datos de grupo familiar
 router.get(
   "/",
   afiliadoController.listarAfiliados
 )
 
-// OBTENER UNO
+// Traer un afiliado
 router.get(
   "/:id",
   afiliadoController.obtenerAfiliado
