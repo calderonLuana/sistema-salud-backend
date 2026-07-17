@@ -269,7 +269,7 @@ GET  /recetas/:id
 
 ---
 
-## 👩‍💻 Autora
+## Autora
 
 **Luana Calderón**
 
