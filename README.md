@@ -5,7 +5,7 @@ Backend desarrollado con **Node.js**, **Express**, **Sequelize** y **MySQL** par
 El sistema permite administrar el acceso de afiliados y grupos familiares, gestionar turnos médicos y recetas, aplicando reglas de negocio reales y control de permisos según el rol del afiliado.
 
 <p align="center">
-  <img src="./docs/LogoLav.png" alt="Logo LAV" width="250">
+  <img src="./docs/LogoLav.jpg" alt="Logo LAV" width="250">
 </p>
 
 ---
