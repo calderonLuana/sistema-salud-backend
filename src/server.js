@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const afiliadoRoutes = require("./routes/afiliadoRoutes")
 const recetaRoutes = require("./routes/recetaRoutes")
 const turnoRoutes = require("./routes/turnoRoutes")
@@ -12,6 +13,8 @@ require("dotenv").config()
 
 const app = express();
 const PORT = 3000;
+
+app.use(cors()); 
 
 // Middleware para leer JSON
 app.use(express.json());
