@@ -1,4 +1,10 @@
-const { Turno, Disponibilidad } = require("../../models")
+const {
+  Turno,
+  Disponibilidad,
+  Profesional,
+  Especialidad
+} = require("../../models")
+
 const afiliadoService = require("./afiliadoService")
 const { Op } = require("sequelize")
 
@@ -22,7 +28,6 @@ async function crearTurno(solicitanteId, pacienteId, disponibilidadId) {
     throw new Error("La disponibilidad ya está reservada")
   }
 
-  // Validar turno existente (doble seguridad)
   const turnoExistente = await Turno.findOne({
     where: { disponibilidadId }
   })
@@ -88,11 +93,21 @@ async function obtenerTurnosProximos(pacienteId) {
       pacienteId,
       estado: "RESERVADO"
     },
+
     include: {
       model: Disponibilidad,
+
       where: {
         fecha: {
           [Op.gte]: ahora
+        }
+      },
+
+      include: {
+        model: Profesional,
+
+        include: {
+          model: Especialidad
         }
       }
     }
@@ -109,11 +124,21 @@ async function obtenerTurnosAnteriores(pacienteId) {
     where: {
       pacienteId
     },
+
     include: {
       model: Disponibilidad,
+
       where: {
         fecha: {
           [Op.lt]: ahora
+        }
+      },
+
+      include: {
+        model: Profesional,
+
+        include: {
+          model: Especialidad
         }
       }
     }
