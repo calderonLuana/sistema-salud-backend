@@ -27,12 +27,11 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Turno.init({
-    disponibilidadId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      unique: true
-    },
-
+    
+   disponibilidadId: {
+  type: DataTypes.INTEGER,
+  allowNull: false
+},
     solicitanteId: {
       type: DataTypes.INTEGER,
       allowNull: false

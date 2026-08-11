@@ -10,18 +10,16 @@ module.exports = {
     type: Sequelize.INTEGER
   },
 
-  disponibilidadId: {
-    type: Sequelize.INTEGER,
-    allowNull: false,
-    unique: true,
-    references: {
-      model: 'Disponibilidads',
-      key: 'id'
-    },
-    onUpdate: 'CASCADE',
-    onDelete: 'CASCADE'
+ disponibilidadId: {
+  type: Sequelize.INTEGER,
+  allowNull: false,
+  references: {
+    model: 'Disponibilidads',
+    key: 'id'
   },
-
+  onUpdate: 'CASCADE',
+  onDelete: 'CASCADE'
+},
   solicitanteId: {
     type: Sequelize.INTEGER,
     allowNull: false,
