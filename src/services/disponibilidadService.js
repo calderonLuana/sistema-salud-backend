@@ -1,8 +1,21 @@
-const { Disponibilidad } = require("../../models")
+const { Disponibilidad, Profesional, Especialidad } = require("../../models")
 
-async function obtenerDisponibilidadesLibres() {
+async function obtenerDisponibilidadesLibres(profesionalId) {
+
+  const where = { estado: "DISPONIBLE" }
+
+  if (profesionalId) {
+    where.profesionalId = profesionalId
+  }
+
   return await Disponibilidad.findAll({
-    where: { estado: "DISPONIBLE" }
+    where,
+    include: {
+      model: Profesional,
+      include: {
+        model: Especialidad
+      }
+    }
   })
 }
 

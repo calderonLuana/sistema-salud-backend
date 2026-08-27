@@ -44,6 +44,46 @@ async function cancelarTurno(req, res) {
   }
 }
 
+async function editarTurno(req, res) {
+  try {
+    const { id } = req.params;
+    const afiliadoId = req.user.id;
+    const { pacienteId, nuevaDisponibilidadId } = req.body;
+
+    const turno = await turnoService.editarTurno(
+      id,
+      afiliadoId,
+      { pacienteId, nuevaDisponibilidadId }
+    );
+
+    res.json(turno);
+  } catch (error) {
+    console.error("ERROR EDITANDO TURNO:");
+    console.error(error);
+
+    res.status(400).json({
+      error: error.message
+    });
+  }
+}
+
+async function obtenerTurnoPorId(req, res) {
+  try {
+    const { id } = req.params;
+
+    const turno = await turnoService.obtenerTurnoPorId(id);
+
+    res.json(turno);
+  } catch (error) {
+    console.error("ERROR OBTENIENDO TURNO:");
+    console.error(error);
+
+    res.status(404).json({
+      error: error.message
+    });
+  }
+}
+
 async function obtenerTurnosProximos(req, res) {
   try {
     const { pacienteId } = req.params;
@@ -85,6 +125,8 @@ async function obtenerTurnosAnteriores(req, res) {
 module.exports = {
   crearTurno,
   cancelarTurno,
+  editarTurno,
+  obtenerTurnoPorId,
   obtenerTurnosProximos,
   obtenerTurnosAnteriores
 };

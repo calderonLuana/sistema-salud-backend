@@ -123,6 +123,134 @@ async function cancelarTurno(
 }
 
 
+async function editarTurno(
+  turnoId,
+  afiliadoId,
+  { pacienteId, nuevaDisponibilidadId }
+) {
+
+  const turno = await Turno.findByPk(turnoId);
+
+  if (!turno) {
+    throw new Error("Turno no encontrado");
+  }
+
+  if (turno.estado !== "RESERVADO") {
+    throw new Error("Solo se pueden editar turnos reservados");
+  }
+
+
+  await afiliadoService.verificarPermisoGestion(
+    afiliadoId,
+    turno.pacienteId
+  );
+
+
+  const disponibilidadActual = await Disponibilidad.findByPk(
+    turno.disponibilidadId
+  );
+
+  const fechaTurno = new Date(disponibilidadActual.fecha);
+  const ahora = new Date();
+
+  const diferenciaHoras =
+    (fechaTurno - ahora) / (1000 * 60 * 60);
+
+  if (diferenciaHoras < 24) {
+    throw new Error(
+      "No se puede editar con menos de 24 horas de anticipación"
+    );
+  }
+
+
+  // Cambio de paciente
+  if (pacienteId) {
+
+    await afiliadoService.validarAfiliadoActivo(pacienteId);
+
+    await afiliadoService.verificarPermisoGestion(
+      afiliadoId,
+      pacienteId
+    );
+
+    turno.pacienteId = pacienteId;
+  }
+
+
+  // Cambio de fecha/horario (nueva disponibilidad)
+  if (nuevaDisponibilidadId) {
+
+    const nuevaDisponibilidad = await Disponibilidad.findByPk(
+      nuevaDisponibilidadId
+    );
+
+    if (!nuevaDisponibilidad) {
+      throw new Error("La nueva disponibilidad no existe");
+    }
+
+    if (nuevaDisponibilidad.estado === "RESERVADA") {
+      throw new Error("La nueva disponibilidad ya está reservada");
+    }
+
+    if (nuevaDisponibilidad.profesionalId !== disponibilidadActual.profesionalId) {
+      throw new Error(
+        "No se puede cambiar de profesional al editar el turno"
+      );
+    }
+
+    const turnoExistente = await Turno.findOne({
+      where: {
+        disponibilidadId: nuevaDisponibilidadId,
+        estado: "RESERVADO"
+      }
+    });
+
+    if (turnoExistente) {
+      throw new Error("La nueva disponibilidad ya está reservada");
+    }
+
+    // Liberar la disponibilidad vieja
+    disponibilidadActual.estado = "DISPONIBLE";
+    await disponibilidadActual.save();
+
+    // Reservar la nueva
+    nuevaDisponibilidad.estado = "RESERVADA";
+    await nuevaDisponibilidad.save();
+
+    turno.disponibilidadId = nuevaDisponibilidadId;
+  }
+
+
+  await turno.save();
+
+  return turno;
+}
+
+
+async function obtenerTurnoPorId(
+  turnoId
+) {
+
+  const turno = await Turno.findByPk(turnoId, {
+    include: {
+      model: Disponibilidad,
+      include: {
+        model: Profesional,
+        include: {
+          model: Especialidad
+        }
+      }
+    }
+  });
+
+  if (!turno) {
+    throw new Error("Turno no encontrado");
+  }
+
+  return turno;
+}
+
+
 async function obtenerTurnosProximos(
   pacienteId
 ) {
@@ -208,6 +336,8 @@ async function obtenerTurnosAnteriores(
 module.exports = {
   crearTurno,
   cancelarTurno,
+  editarTurno,
+  obtenerTurnoPorId,
   obtenerTurnosProximos,
   obtenerTurnosAnteriores
 };

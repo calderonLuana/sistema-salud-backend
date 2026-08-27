@@ -22,7 +22,9 @@ const listarDisponibilidades = async (req, res) => {
 
 const listarDisponibilidadesLibres = async (req, res) => {
   try {
-    const disponibilidades = await obtenerDisponibilidadesLibres()
+    const { profesionalId } = req.query
+
+    const disponibilidades = await obtenerDisponibilidadesLibres(profesionalId)
 
     res.json(disponibilidades)
   } catch (error) {

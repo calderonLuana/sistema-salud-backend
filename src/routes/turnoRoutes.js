@@ -7,12 +7,9 @@ const authMiddleware = require("../middlewares/authMiddleware");
 
 const {
   createTurnoSchema,
-  cancelarTurnoSchema
+  cancelarTurnoSchema,
+  editarTurnoSchema
 } = require("../schemas/turnoSchema");
-
-// PRUEBA: verificar que los schemas estén llegando correctamente
-console.log("CREATE SCHEMA:", createTurnoSchema);
-console.log("CANCELAR SCHEMA:", cancelarTurnoSchema);
 
 // Crear turno
 router.post(
@@ -30,6 +27,14 @@ router.delete(
   turnoController.cancelarTurno
 );
 
+// Editar turno
+router.patch(
+  "/:id",
+  authMiddleware,
+  validateSchema(editarTurnoSchema),
+  turnoController.editarTurno
+);
+
 // Consultar próximos turnos
 router.get(
   "/proximos/:pacienteId",
@@ -42,6 +47,13 @@ router.get(
   "/historial/:pacienteId",
   authMiddleware,
   turnoController.obtenerTurnosAnteriores
+);
+
+// Consultar un turno puntual
+router.get(
+  "/:id",
+  authMiddleware,
+  turnoController.obtenerTurnoPorId
 );
 
 module.exports = router;

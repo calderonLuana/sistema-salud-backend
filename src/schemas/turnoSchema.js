@@ -12,7 +12,14 @@ const cancelarTurnoSchema = Joi.object({
 })
 
 
+const editarTurnoSchema = Joi.object({
+  pacienteId: Joi.number().integer().positive().optional(),
+  nuevaDisponibilidadId: Joi.number().integer().positive().optional()
+}).or("pacienteId", "nuevaDisponibilidadId")
+
+
 module.exports = {
   createTurnoSchema,
-  cancelarTurnoSchema
+  cancelarTurnoSchema,
+  editarTurnoSchema
 }
