@@ -163,7 +163,6 @@ async function editarTurno(
   }
 
 
-  // Cambio de paciente
   if (pacienteId) {
 
     await afiliadoService.validarAfiliadoActivo(pacienteId);
@@ -177,7 +176,6 @@ async function editarTurno(
   }
 
 
-  // Cambio de fecha/horario (nueva disponibilidad)
   if (nuevaDisponibilidadId) {
 
     const nuevaDisponibilidad = await Disponibilidad.findByPk(
@@ -209,11 +207,10 @@ async function editarTurno(
       throw new Error("La nueva disponibilidad ya está reservada");
     }
 
-    // Liberar la disponibilidad vieja
+    // librar la disponibilidad vieja
     disponibilidadActual.estado = "DISPONIBLE";
     await disponibilidadActual.save();
 
-    // Reservar la nueva
     nuevaDisponibilidad.estado = "RESERVADA";
     await nuevaDisponibilidad.save();
 

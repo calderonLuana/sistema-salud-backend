@@ -9,20 +9,8 @@ const {
   createProfesionalSchema
 } = require("../schemas/profesionalSchema")
 
-router.post(
-  "/",
-  validateSchema(createProfesionalSchema),
-  profesionalController.crearProfesional
-)
-
-router.get(
-  "/",
-  profesionalController.listarProfesionales
-)
-
-router.get(
-  "/:id",
-  profesionalController.obtenerProfesional
-)
+router.post( "/", validateSchema(createProfesionalSchema), profesionalController.crearProfesional)
+router.get( "/", profesionalController.listarProfesionales)
+router.get( "/:id", profesionalController.obtenerProfesional)
 
 module.exports = router

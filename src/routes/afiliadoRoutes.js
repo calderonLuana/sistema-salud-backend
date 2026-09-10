@@ -11,35 +11,14 @@ const {
 } = require("../schemas/afiliadoSchema")
 
 // Registro
-router.post(
-  "/registro",
-  validateSchema(registroSchema),
-  afiliadoController.registro
-)
-
+router.post( "/registro", validateSchema(registroSchema), afiliadoController.registro)
 // Login
-router.post(
-  "/login",
-  validateSchema(loginSchema),
-  afiliadoController.login
-)
-
+router.post("/login", validateSchema(loginSchema), afiliadoController.login)
 // Traer grupo familiar
-router.get(
-  "/grupo/:id",
-  afiliadoController.obtenerGrupoFamiliar
-)
-
+router.get("/grupo/:id", afiliadoController.obtenerGrupoFamiliar)
 // Traer datos de grupo familiar
-router.get(
-  "/",
-  afiliadoController.listarAfiliados
-)
-
+router.get("/",afiliadoController.listarAfiliados)
 // Traer un afiliado
-router.get(
-  "/:id",
-  afiliadoController.obtenerAfiliado
-)
+router.get( "/:id", afiliadoController.obtenerAfiliado)
 
 module.exports = router

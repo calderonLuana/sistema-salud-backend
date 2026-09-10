@@ -3,11 +3,6 @@ const Joi = require("joi")
 const ESTADOS = ["PENDIENTE", "APROBADA", "RECHAZADA"]
 
 const createRecetaSchema = Joi.object({
-  solicitanteId: Joi.number()
-    .integer()
-    .positive()
-    .required(),
-
   pacienteId: Joi.number()
     .integer()
     .positive()
@@ -31,6 +26,7 @@ const createRecetaSchema = Joi.object({
   cantidad: Joi.number()
     .integer()
     .positive()
+    .max(2)
     .required(),
 
   observaciones: Joi.string()
@@ -38,14 +34,10 @@ const createRecetaSchema = Joi.object({
 })
 
 const renovarRecetaSchema = Joi.object({
-  solicitanteId: Joi.number()
-    .integer()
-    .positive()
-    .required(),
-
   cantidad: Joi.number()
     .integer()
-    .positive(),
+    .positive()
+    .max(2),
 
   observaciones: Joi.string()
     .allow("", null)

@@ -9,25 +9,9 @@ const {
   createDisponibilidadSchema
 } = require("../schemas/disponibilidadSchema")
 
-router.post(
-  "/",
-  validateSchema(createDisponibilidadSchema),
-  disponibilidadController.listarDisponibilidades // podés cambiar si agregás create
-)
-
-router.get(
-  "/",
-  disponibilidadController.listarDisponibilidades
-)
-
-router.get(
-  "/libres",
-  disponibilidadController.listarDisponibilidadesLibres
-)
-
-router.get(
-  "/:id",
-  disponibilidadController.obtenerDisponibilidad
-)
+router.post("/", validateSchema(createDisponibilidadSchema), disponibilidadController.listarDisponibilidades)
+router.get( "/", disponibilidadController.listarDisponibilidades)
+router.get( "/libres", disponibilidadController.listarDisponibilidadesLibres)
+router.get( "/:id", disponibilidadController.obtenerDisponibilidad)
 
 module.exports = router

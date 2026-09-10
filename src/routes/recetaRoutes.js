@@ -10,33 +10,9 @@ const {
   renovarRecetaSchema
 } = require("../schemas/recetaSchema")
 
-//Crear nueva receta
-router.post(
-  "/",
-  authMiddleware,
-  validateSchema(createRecetaSchema),
-  recetaController.crearReceta
-)
-
-//Rnovar segun criterios
-router.put(
-  "/renovar/:id",
-  authMiddleware,
-  validateSchema(renovarRecetaSchema),
-  recetaController.renovarReceta
-)
-
-//Consultas
-router.get(
-  "/afiliado/:pacienteId",
-  authMiddleware,
-  recetaController.obtenerRecetasAfiliado
-)
-
-router.get(
-  "/:id",
-  authMiddleware,
-  recetaController.obtenerRecetaPorId
-)
+router.post("/", authMiddleware, validateSchema(createRecetaSchema), recetaController.crearReceta)
+router.put("/renovar/:id", authMiddleware, validateSchema(renovarRecetaSchema), recetaController.renovarReceta)
+router.get( "/afiliado/:pacienteId", authMiddleware, recetaController.obtenerRecetasAfiliado)
+router.get("/:id",authMiddleware,recetaController.obtenerRecetaPorId)
 
 module.exports = router

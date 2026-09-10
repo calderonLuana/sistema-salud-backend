@@ -92,10 +92,56 @@ async function verificarPermisoGestion(solicitanteId, pacienteId) {
   throw new Error("No tiene permisos para gestionar este afiliado")
 }
 
+
+async function verificarPermisoVisualizacion(solicitanteId, pacienteId) {
+
+  const solicitante = await Afiliado.findByPk(solicitanteId)
+  const paciente = await Afiliado.findByPk(pacienteId)
+
+  if (!solicitante || !paciente) {
+    throw new Error("Afiliado no encontrado")
+  }
+
+  // Cualquier afiliado puede ver sus propias operaciones, sin importar la edad
+  if (solicitante.id === paciente.id) {
+    return true
+  }
+
+  if (solicitante.grupoFamiliarId !== paciente.grupoFamiliarId) {
+    throw new Error("No pertenecen al mismo grupo familiar")
+  }
+
+  const edadSolicitante = calcularEdad(solicitante.fechaNacimiento)
+
+  // Menores de 18 solo pueden ver las suyas propias, no las de otros integrantes 
+  if (edadSolicitante < 18) {
+    throw new Error("No tiene permisos para visualizar este afiliado")
+  }
+
+  const edadPaciente = calcularEdad(paciente.fechaNacimiento)
+
+  // Titular puede ver todo el grupo familiar
+  if (solicitante.tipoAfiliado === "TITULAR") {
+    return true
+  }
+
+  // Cónyuge puede ver lo suyo + hijos menores de 18
+  if (
+    solicitante.tipoAfiliado === "CONYUGE" &&
+    edadPaciente < 18
+  ) {
+    return true
+  }
+
+  throw new Error("No tiene permisos para visualizar este afiliado")
+}
+
+
 module.exports = {
   calcularEdad,
   validarAfiliadoActivo,
   validarRegistro,
   verificarPermisoGestion,
+  verificarPermisoVisualizacion,
   validarDniUnico
 }

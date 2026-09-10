@@ -5,16 +5,7 @@ const medicamentoController = require("../controllers/medicamentoController")
 const validateSchema = require("../middlewares/validateSchema")
 const authMiddleware = require("../middlewares/authMiddleware")
 
-//Traer todos
-router.get(
-  "/",
-  medicamentoController.listarMedicamentos
-)
-
-//Traer uno 
-router.get(
-  "/:id",
-  medicamentoController.obtenerMedicamento
-)
+router.get( "/", medicamentoController.listarMedicamentos)
+router.get( "/:id", medicamentoController.obtenerMedicamento)
 
 module.exports = router
