@@ -20,7 +20,7 @@ async function registro(req, res) {
 
 if (!afiliado) {
   return res.status(404).json({
-    error: "Afiliado no encontrado"
+    error: "Afiliado no dado de alta"
   })
 }
 
@@ -47,6 +47,57 @@ if (afiliado.registrado) {
 
     res.json({
       message: "Registro completado"
+    })
+
+  } catch (error) {
+    res.status(400).json({
+      error: error.message
+    })
+  }
+}
+
+
+async function recuperarPassword(req, res) {
+  try {
+
+    const { dni, password, confirmarPassword } = req.body
+
+    if (password !== confirmarPassword) {
+      return res.status(400).json({
+        error: "Las contraseñas no coinciden"
+      })
+    }
+
+    const afiliado = await Afiliado.findOne({
+      where: { dni }
+    })
+
+    if (!afiliado) {
+      return res.status(404).json({
+        error: "Afiliado no dado de alta"
+      })
+    }
+
+    if (!afiliado.registrado) {
+      return res.status(400).json({
+        error: "El afiliado no está registrado. Primero debe completar el registro."
+      })
+    }
+
+    if (afiliado.estado !== "ACTIVO") {
+      return res.status(403).json({
+        error: "Afiliado inactivo"
+      })
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10)
+
+    afiliado.password = hashedPassword
+
+    await afiliado.save()
+
+    res.json({
+      message: "Contraseña actualizada correctamente"
     })
 
   } catch (error) {
@@ -85,9 +136,11 @@ async function login(req, res) {
       where: { dni }
     })
 
+    const mensajeGenerico = "Los datos ingresados no son válidos. Verificá tu DNI y contraseña e intentá nuevamente."
+
     if (!afiliado) {
-      return res.status(404).json({
-        error: "Afiliado no encontrado"
+      return res.status(401).json({
+        error: mensajeGenerico
       })
     }
 
@@ -108,7 +161,7 @@ async function login(req, res) {
 
     if (!passwordValida) {
       return res.status(401).json({
-        error: "Contraseña incorrecta"
+        error: mensajeGenerico
       })
     }
 
@@ -196,8 +249,8 @@ res.json(afiliado.GrupoFamiliar)
 module.exports = {
   registro,
   login,
+  recuperarPassword,
   obtenerAfiliado,
   obtenerGrupoFamiliar,
   listarAfiliados,  
 }
-

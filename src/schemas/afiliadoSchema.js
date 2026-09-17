@@ -19,6 +19,15 @@ const loginSchema = Joi.object({
     .required()
 })
 
+const recuperarPasswordSchema = Joi.object({
+  dni: Joi.string()
+    .pattern(/^[0-9]{7,8}$/)
+    .required(),
+
+  password: Joi.string().min(4).required(),
+  confirmarPassword: Joi.string().required()
+})
+
 // Creacion (solo para pruebas)
 const createAfiliadoSchema = Joi.object({
   grupoFamiliarId: Joi.number().integer().required(),
@@ -52,6 +61,7 @@ const updateAfiliadoSchema = Joi.object({
 module.exports = {
   registroSchema,
   loginSchema,
+  recuperarPasswordSchema,
   createAfiliadoSchema,
   updateAfiliadoSchema
 }

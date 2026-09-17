@@ -7,13 +7,16 @@ const authMiddleware = require("../middlewares/authMiddleware")
 
 const {
   registroSchema,
-  loginSchema
+  loginSchema,
+  recuperarPasswordSchema
 } = require("../schemas/afiliadoSchema")
 
 // Registro
 router.post( "/registro", validateSchema(registroSchema), afiliadoController.registro)
 // Login
 router.post("/login", validateSchema(loginSchema), afiliadoController.login)
+// Recuperar contraseña
+router.put("/recuperar", validateSchema(recuperarPasswordSchema), afiliadoController.recuperarPassword)
 // Traer grupo familiar
 router.get("/grupo/:id", afiliadoController.obtenerGrupoFamiliar)
 // Traer datos de grupo familiar
