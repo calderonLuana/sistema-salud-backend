@@ -18,10 +18,8 @@ router.post("/login", validateSchema(loginSchema), afiliadoController.login)
 // Recuperar contraseña
 router.put("/recuperar", validateSchema(recuperarPasswordSchema), afiliadoController.recuperarPassword)
 // Traer grupo familiar
-router.get("/grupo/:id", afiliadoController.obtenerGrupoFamiliar)
-// Traer datos de grupo familiar
-router.get("/",afiliadoController.listarAfiliados)
+router.get("/grupo/:id", authMiddleware, afiliadoController.obtenerGrupoFamiliar)
 // Traer un afiliado
-router.get( "/:id", afiliadoController.obtenerAfiliado)
+router.get( "/:id", authMiddleware, afiliadoController.obtenerAfiliado)
 
 module.exports = router

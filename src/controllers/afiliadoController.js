@@ -108,24 +108,6 @@ async function recuperarPassword(req, res) {
 }
 
 
-async function listarAfiliados(req, res) {
-
-  try {
-
-    const afiliados = await Afiliado.findAll()
-
-    res.json(afiliados)
-
-  } catch (error) {
-
-    res.status(500).json({
-      error: error.message
-    })
-
-  }
-
-}
-
 async function login(req, res) {
 
   try {
@@ -201,8 +183,13 @@ async function obtenerAfiliado(req, res) {
   try {
 
     const { id } = req.params
+    const solicitanteId = req.user.id
 
-    const afiliado = await Afiliado.findByPk(id)
+    await afiliadoService.verificarPermisoVisualizacion(solicitanteId, id)
+
+    const afiliado = await Afiliado.findByPk(id, {
+      attributes: { exclude: ["password"] }
+    })
 
     if (!afiliado) {
       return res.status(404).json({
@@ -214,7 +201,7 @@ async function obtenerAfiliado(req, res) {
 
   } catch (error) {
 
-    res.status(500).json({
+    res.status(403).json({
       error: error.message
     })
 
@@ -227,18 +214,31 @@ async function obtenerGrupoFamiliar(req, res) {
   try {
 
     const { id } = req.params
+    const solicitanteId = req.user.id
 
-   const afiliado = await Afiliado.findByPk(id, {
-  include: {
-    model: GrupoFamiliar,
-    include: Afiliado
-  }
-})
+    await afiliadoService.verificarPermisoVisualizacion(solicitanteId, id)
 
-res.json(afiliado.GrupoFamiliar)
+    const afiliado = await Afiliado.findByPk(id, {
+      include: {
+        model: GrupoFamiliar,
+        include: {
+          model: Afiliado,
+          attributes: { exclude: ["password"] }
+        }
+      }
+    })
+
+    if (!afiliado) {
+      return res.status(404).json({
+        error: "Afiliado no encontrado"
+      })
+    }
+
+    res.json(afiliado.GrupoFamiliar)
+
   } catch (error) {
 
-    res.status(500).json({
+    res.status(403).json({
       error: error.message
     })
 
@@ -251,6 +251,5 @@ module.exports = {
   login,
   recuperarPassword,
   obtenerAfiliado,
-  obtenerGrupoFamiliar,
-  listarAfiliados,  
+  obtenerGrupoFamiliar
 }

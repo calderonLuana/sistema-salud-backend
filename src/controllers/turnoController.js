@@ -16,7 +16,7 @@ async function crearTurno(req, res) {
     console.error("ERROR CREANDO TURNO:");
     console.error(error);
 
-    res.status(400).json({
+    res.status(error.status || 400).json({
       error: error.message,
       detalle: error.errors || null
     });
@@ -38,7 +38,7 @@ async function cancelarTurno(req, res) {
     console.error("ERROR CANCELANDO TURNO:");
     console.error(error);
 
-    res.status(400).json({
+    res.status(error.status || 400).json({
       error: error.message
     });
   }
@@ -61,7 +61,7 @@ async function editarTurno(req, res) {
     console.error("ERROR EDITANDO TURNO:");
     console.error(error);
 
-    res.status(400).json({
+    res.status(error.status || 400).json({
       error: error.message
     });
   }
@@ -70,15 +70,19 @@ async function editarTurno(req, res) {
 async function obtenerTurnoPorId(req, res) {
   try {
     const { id } = req.params;
+    const solicitanteId = req.user.id;
 
-    const turno = await turnoService.obtenerTurnoPorId(id);
+    const turno = await turnoService.obtenerTurnoPorId(
+      id,
+      solicitanteId
+    );
 
     res.json(turno);
   } catch (error) {
     console.error("ERROR OBTENIENDO TURNO:");
     console.error(error);
 
-    res.status(404).json({
+    res.status(error.status || 400).json({
       error: error.message
     });
   }
@@ -87,8 +91,10 @@ async function obtenerTurnoPorId(req, res) {
 async function obtenerTurnosProximos(req, res) {
   try {
     const { pacienteId } = req.params;
+    const solicitanteId = req.user.id;
 
     const turnos = await turnoService.obtenerTurnosProximos(
+      solicitanteId,
       pacienteId
     );
 
@@ -97,7 +103,7 @@ async function obtenerTurnosProximos(req, res) {
     console.error("ERROR OBTENIENDO TURNOS PROXIMOS:");
     console.error(error);
 
-    res.status(400).json({
+    res.status(error.status || 400).json({
       error: error.message
     });
   }
@@ -106,8 +112,10 @@ async function obtenerTurnosProximos(req, res) {
 async function obtenerTurnosAnteriores(req, res) {
   try {
     const { pacienteId } = req.params;
+    const solicitanteId = req.user.id;
 
     const turnos = await turnoService.obtenerTurnosAnteriores(
+      solicitanteId,
       pacienteId
     );
 
@@ -116,7 +124,7 @@ async function obtenerTurnosAnteriores(req, res) {
     console.error("ERROR OBTENIENDO HISTORIAL:");
     console.error(error);
 
-    res.status(400).json({
+    res.status(error.status || 400).json({
       error: error.message
     });
   }

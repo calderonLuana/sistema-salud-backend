@@ -9,6 +9,56 @@ const afiliadoService = require("./afiliadoService");
 const { Op } = require("sequelize");
 
 
+// Crea un error con un código de estado HTTP asociado.
+// El controller lo usa para responder 403, 404, etc. en vez de un 400 genérico.
+function crearError(mensaje, status) {
+  const error = new Error(mensaje);
+  error.status = status;
+  return error;
+}
+
+
+// Permiso de GESTIÓN (acciones): si falla, se informa como 403
+async function verificarGestion(solicitanteId, pacienteId) {
+  try {
+    await afiliadoService.verificarPermisoGestion(
+      solicitanteId,
+      pacienteId
+    );
+  } catch (error) {
+    throw crearError(error.message, 403);
+  }
+}
+
+
+// Permiso de VISUALIZACIÓN (consultas): si falla, se informa como 403
+async function verificarVisualizacion(solicitanteId, pacienteId) {
+  try {
+    await afiliadoService.verificarPermisoVisualizacion(
+      solicitanteId,
+      pacienteId
+    );
+  } catch (error) {
+    throw crearError(error.message, 403);
+  }
+}
+
+
+// Horas que faltan para el turno, usando fecha + hora
+// (la hora se interpreta con la zona horaria del servidor)
+function horasHastaTurno(disponibilidad) {
+  const fechaHora = new Date(
+    `${disponibilidad.fecha}T${disponibilidad.hora}`
+  );
+
+  if (Number.isNaN(fechaHora.getTime())) {
+    throw new Error("La fecha u hora del turno no es válida");
+  }
+
+  return (fechaHora - new Date()) / (1000 * 60 * 60);
+}
+
+
 async function crearTurno(
   solicitanteId,
   pacienteId,
@@ -19,10 +69,7 @@ async function crearTurno(
 
   await afiliadoService.validarAfiliadoActivo(pacienteId);
 
-  await afiliadoService.verificarPermisoGestion(
-    solicitanteId,
-    pacienteId
-  );
+  await verificarGestion(solicitanteId, pacienteId);
 
 
   const disponibilidad = await Disponibilidad.findByPk(
@@ -76,14 +123,16 @@ async function cancelarTurno(
   const turno = await Turno.findByPk(turnoId);
 
   if (!turno) {
-    throw new Error("Turno no encontrado");
+    throw crearError("Turno no encontrado", 404);
   }
 
 
-  await afiliadoService.verificarPermisoGestion(
-    afiliadoId,
-    turno.pacienteId
-  );
+  await verificarGestion(afiliadoId, turno.pacienteId);
+
+
+  if (turno.estado !== "RESERVADO") {
+    throw new Error("Solo se pueden cancelar turnos reservados");
+  }
 
 
   const disponibilidad = await Disponibilidad.findByPk(
@@ -91,18 +140,7 @@ async function cancelarTurno(
   );
 
 
-  const fechaTurno = new Date(
-    disponibilidad.fecha
-  );
-
-  const ahora = new Date();
-
-
-  const diferenciaHoras =
-    (fechaTurno - ahora) / (1000 * 60 * 60);
-
-
-  if (diferenciaHoras < 24) {
+  if (horasHastaTurno(disponibilidad) < 24) {
     throw new Error(
       "No se puede cancelar con menos de 24 horas"
     );
@@ -132,7 +170,7 @@ async function editarTurno(
   const turno = await Turno.findByPk(turnoId);
 
   if (!turno) {
-    throw new Error("Turno no encontrado");
+    throw crearError("Turno no encontrado", 404);
   }
 
   if (turno.estado !== "RESERVADO") {
@@ -140,23 +178,14 @@ async function editarTurno(
   }
 
 
-  await afiliadoService.verificarPermisoGestion(
-    afiliadoId,
-    turno.pacienteId
-  );
+  await verificarGestion(afiliadoId, turno.pacienteId);
 
 
   const disponibilidadActual = await Disponibilidad.findByPk(
     turno.disponibilidadId
   );
 
-  const fechaTurno = new Date(disponibilidadActual.fecha);
-  const ahora = new Date();
-
-  const diferenciaHoras =
-    (fechaTurno - ahora) / (1000 * 60 * 60);
-
-  if (diferenciaHoras < 24) {
+  if (horasHastaTurno(disponibilidadActual) < 24) {
     throw new Error(
       "No se puede editar con menos de 24 horas de anticipación"
     );
@@ -167,10 +196,7 @@ async function editarTurno(
 
     await afiliadoService.validarAfiliadoActivo(pacienteId);
 
-    await afiliadoService.verificarPermisoGestion(
-      afiliadoId,
-      pacienteId
-    );
+    await verificarGestion(afiliadoId, pacienteId);
 
     turno.pacienteId = pacienteId;
   }
@@ -225,7 +251,8 @@ async function editarTurno(
 
 
 async function obtenerTurnoPorId(
-  turnoId
+  turnoId,
+  solicitanteId
 ) {
 
   const turno = await Turno.findByPk(turnoId, {
@@ -241,16 +268,21 @@ async function obtenerTurnoPorId(
   });
 
   if (!turno) {
-    throw new Error("Turno no encontrado");
+    throw crearError("Turno no encontrado", 404);
   }
+
+  await verificarVisualizacion(solicitanteId, turno.pacienteId);
 
   return turno;
 }
 
 
 async function obtenerTurnosProximos(
+  solicitanteId,
   pacienteId
 ) {
+
+  await verificarVisualizacion(solicitanteId, pacienteId);
 
   const ahora = new Date();
 
@@ -288,8 +320,11 @@ async function obtenerTurnosProximos(
 
 
 async function obtenerTurnosAnteriores(
+  solicitanteId,
   pacienteId
 ) {
+
+  await verificarVisualizacion(solicitanteId, pacienteId);
 
   const ahora = new Date();
 

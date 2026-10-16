@@ -19,6 +19,12 @@ function authMiddleware(req, res, next) {
 
     next()
   } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return res.status(401).json({
+        error: "Sesión expirada"
+      })
+    }
+
     return res.status(401).json({
       error: "Token inválido"
     })
