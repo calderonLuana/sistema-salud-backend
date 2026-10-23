@@ -6,7 +6,11 @@ const {
 } = require("../../models");
 
 const afiliadoService = require("./afiliadoService");
-const { Op } = require("sequelize");
+const {
+  fechaHoraDeDisponibilidad,
+  horasHasta,
+  yaPaso
+} = require("../utils/fechas");
 
 
 // Crea un error con un código de estado HTTP asociado.
@@ -44,21 +48,6 @@ async function verificarVisualizacion(solicitanteId, pacienteId) {
 }
 
 
-// Horas que faltan para el turno, usando fecha + hora
-// (la hora se interpreta con la zona horaria del servidor)
-function horasHastaTurno(disponibilidad) {
-  const fechaHora = new Date(
-    `${disponibilidad.fecha}T${disponibilidad.hora}`
-  );
-
-  if (Number.isNaN(fechaHora.getTime())) {
-    throw new Error("La fecha u hora del turno no es válida");
-  }
-
-  return (fechaHora - new Date()) / (1000 * 60 * 60);
-}
-
-
 async function crearTurno(
   solicitanteId,
   pacienteId,
@@ -78,6 +67,11 @@ async function crearTurno(
 
   if (!disponibilidad) {
     throw new Error("Disponibilidad no existe");
+  }
+
+
+  if (yaPaso(disponibilidad)) {
+    throw new Error("No se puede reservar un horario que ya pasó");
   }
 
 
@@ -140,7 +134,7 @@ async function cancelarTurno(
   );
 
 
-  if (horasHastaTurno(disponibilidad) < 24) {
+  if (horasHasta(disponibilidad) < 24) {
     throw new Error(
       "No se puede cancelar con menos de 24 horas"
     );
@@ -185,7 +179,7 @@ async function editarTurno(
     turno.disponibilidadId
   );
 
-  if (horasHastaTurno(disponibilidadActual) < 24) {
+  if (horasHasta(disponibilidadActual) < 24) {
     throw new Error(
       "No se puede editar con menos de 24 horas de anticipación"
     );
@@ -210,6 +204,10 @@ async function editarTurno(
 
     if (!nuevaDisponibilidad) {
       throw new Error("La nueva disponibilidad no existe");
+    }
+
+    if (yaPaso(nuevaDisponibilidad)) {
+      throw new Error("No se puede reservar un horario que ya pasó");
     }
 
     if (nuevaDisponibilidad.estado === "RESERVADA") {
@@ -277,31 +275,16 @@ async function obtenerTurnoPorId(
 }
 
 
-async function obtenerTurnosProximos(
-  solicitanteId,
-  pacienteId
-) {
-
-  await verificarVisualizacion(solicitanteId, pacienteId);
-
-  const ahora = new Date();
-
-
-  const turnos = await Turno.findAll({
-
-    where: {
-      pacienteId,
-      estado: "RESERVADO"
-    },
+// Trae todos los turnos de un paciente con su disponibilidad,
+// profesional y especialidad. La separación entre próximos y anteriores
+// se hace después, considerando fecha y hora.
+async function buscarTurnosDelPaciente(pacienteId) {
+  return Turno.findAll({
+    where: { pacienteId },
 
     include: {
       model: Disponibilidad,
-
-      where: {
-        fecha: {
-          [Op.gte]: ahora
-        }
-      },
+      required: true,
 
       include: {
         model: Profesional,
@@ -311,14 +294,58 @@ async function obtenerTurnosProximos(
         }
       }
     }
-
   });
-
-
-  return turnos;
 }
 
 
+//NUEVOOOOO
+
+async function obtenerTurnosProximos(
+  solicitanteId,
+  pacienteId
+) {
+  await verificarVisualizacion(solicitanteId, pacienteId);
+
+  const turnos = await buscarTurnosDelPaciente(pacienteId);
+  const ahora = new Date();
+
+  const turnosProximos = turnos
+    .filter(
+      (turno) =>
+        turno.estado === "RESERVADO" &&
+        fechaHoraDeDisponibilidad(turno.Disponibilidad) > ahora
+    )
+    .sort(
+      (a, b) =>
+        fechaHoraDeDisponibilidad(a.Disponibilidad) -
+        fechaHoraDeDisponibilidad(b.Disponibilidad)
+    );
+
+  const puedeGestionar = await afiliadoService.verificarPermisoGestion(
+    solicitanteId,
+    pacienteId
+  ).then(() => true).catch(() => false);
+
+  return turnosProximos.map((turno) => {
+    const horasRestantes = horasHasta(turno.Disponibilidad);
+    const puedeActuar =
+      puedeGestionar &&
+      turno.estado === "RESERVADO" &&
+      horasRestantes >= 24;
+
+    return {
+      ...turno.toJSON(),
+      puedeCancelar: puedeActuar,
+      puedeEditar: puedeActuar
+    };
+  });
+}
+
+
+
+// Anteriores: todo turno que no sea un reservado futuro (cancelados,
+// no asistió y reservados cuya fecha y hora ya pasaron).
+// Orden: del más reciente al más antiguo.
 async function obtenerTurnosAnteriores(
   solicitanteId,
   pacienteId
@@ -326,42 +353,21 @@ async function obtenerTurnosAnteriores(
 
   await verificarVisualizacion(solicitanteId, pacienteId);
 
+  const turnos = await buscarTurnosDelPaciente(pacienteId);
+
   const ahora = new Date();
 
-
-  const turnos = await Turno.findAll({
-
-    where: {
-      pacienteId,
-
-      [Op.or]: [
-        {
-          estado: "CANCELADO"
-        },
-        {
-          "$Disponibilidad.fecha$": {
-            [Op.lt]: ahora
-          }
-        }
-      ]
-    },
-
-    include: {
-      model: Disponibilidad,
-
-      include: {
-        model: Profesional,
-
-        include: {
-          model: Especialidad
-        }
-      }
-    }
-
-  });
-
-
-  return turnos;
+  return turnos
+    .filter(
+      (turno) =>
+        turno.estado !== "RESERVADO" ||
+        fechaHoraDeDisponibilidad(turno.Disponibilidad) <= ahora
+    )
+    .sort(
+      (a, b) =>
+        fechaHoraDeDisponibilidad(b.Disponibilidad) -
+        fechaHoraDeDisponibilidad(a.Disponibilidad)
+    );
 }
 
 
