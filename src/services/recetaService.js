@@ -83,7 +83,6 @@ async function crearReceta(solicitanteId, pacienteId, medicamentoId, datosReceta
   }
 
 
-  // Crear receta (armado explícito, sin spread del body completo)
   const receta = await Receta.create({
     solicitanteId,
     pacienteId,

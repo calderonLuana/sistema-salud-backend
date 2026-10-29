@@ -2,13 +2,7 @@
 
 const { QueryTypes } = require('sequelize');
 
-/**
- * DATOS DE PRUEBA - NO APTOS PARA PRODUCCIÓN
- * Más especialidades y profesionales para probar el buscador y el formulario
- * de solicitud de turnos.
- */
 
-// Las mismas tres sedes de prueba que usa el seeder 20261018000001
 const SEDES = [
   'Sede Almagro - Av. Corrientes 3500, CABA',
   'Sede Belgrano - Av. Cabildo 2000, CABA',
@@ -17,9 +11,7 @@ const SEDES = [
 
 const ESPECIALIDADES_NUEVAS = ['Dermatologia', 'Traumatologia', 'Oftalmologia'];
 
-// El orden importa: determina en qué sede atiende cada profesional cada día.
-// Con este orden, el Dr. Gomez atiende el 19/11 en la sede de Morón.
-// Cardiologia ya existe (especialidad 3) pero no tenía profesionales.
+
 const PROFESIONALES_NUEVOS = [
   { nombre: 'Pablo', apellido: 'Gomez', especialidad: 'Dermatologia' },
   { nombre: 'Martin', apellido: 'Echeverria', especialidad: 'Cardiologia' },
@@ -47,7 +39,6 @@ module.exports = {
   async up(queryInterface) {
     const ahora = new Date();
 
-    // 1) Especialidades nuevas (solo si no existen)
     for (const nombre of ESPECIALIDADES_NUEVAS) {
       const existente = await buscarUno(
         queryInterface,
@@ -62,7 +53,6 @@ module.exports = {
       }
     }
 
-    // 2) Profesionales y 3) sus disponibilidades
     for (let k = 0; k < PROFESIONALES_NUEVOS.length; k++) {
       const { nombre, apellido, especialidad } = PROFESIONALES_NUEVOS[k];
 
@@ -129,9 +119,7 @@ module.exports = {
   },
 
   async down(queryInterface) {
-    // Solo borra lo que este seeder creó y nadie usa todavía:
-    // Disponibilidad -> Turno tiene ON DELETE CASCADE, así que no se
-    // borran horarios que ya tengan turnos.
+   
     for (const { nombre, apellido } of PROFESIONALES_NUEVOS) {
       const prof = await buscarUno(
         queryInterface,

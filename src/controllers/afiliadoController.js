@@ -147,7 +147,7 @@ async function login(req, res) {
       })
     }
 
-    //generar token
+    //genra token
     const token = jwt.sign(
       {
         id: afiliado.id,

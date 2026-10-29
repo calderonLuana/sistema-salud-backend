@@ -42,9 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false
     },
 
-    // NO_ASISTIO: FUNCIONALIDAD DE PRUEBA - NO APTA PARA PRODUCCIÓN.
-    // Ningún endpoint de esta app lo asigna (la app es solo para afiliados);
-    // en un sistema real lo registraría un profesional o la administración.
+    // NO_ASISTIO: solo para pruebas
+    // en un sistema real lo registra administracion 
     estado: {
       type: DataTypes.ENUM('RESERVADO', 'CANCELADO', 'NO_ASISTIO'),
       defaultValue: 'RESERVADO'

@@ -1,6 +1,5 @@
 'use strict';
 
-// Tres sedes de prueba: dos en Capital y una en Provincia
 const SEDES = [
   'Sede Almagro - Av. Corrientes 3500, CABA',
   'Sede Belgrano - Av. Cabildo 2000, CABA',
@@ -20,7 +19,6 @@ const HORARIOS = ['09:00', '10:40', '15:00', '16:20'];
 module.exports = {
   async up(queryInterface) {
 
-    // Guarda: si ya se cargaron horarios en estas sedes, no se vuelve a insertar
     const [existentes] = await queryInterface.sequelize.query(
       'SELECT COUNT(*) AS total FROM Disponibilidads WHERE lugar IN (:sedes)',
       { replacements: { sedes: SEDES } }
@@ -59,9 +57,6 @@ module.exports = {
 
   async down(queryInterface) {
 
-    // Borra solo los horarios de estas sedes que nunca tuvieron un turno.
-    // Disponibilidad -> Turno tiene ON DELETE CASCADE: borrar una
-    // disponibilidad con turnos borraría también esos turnos.
     await queryInterface.sequelize.query(
       `DELETE FROM Disponibilidads
        WHERE lugar IN (:sedes)

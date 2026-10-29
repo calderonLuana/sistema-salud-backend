@@ -275,9 +275,7 @@ async function obtenerTurnoPorId(
 }
 
 
-// Trae todos los turnos de un paciente con su disponibilidad,
-// profesional y especialidad. La separación entre próximos y anteriores
-// se hace después, considerando fecha y hora.
+
 async function buscarTurnosDelPaciente(pacienteId) {
   return Turno.findAll({
     where: { pacienteId },
@@ -343,9 +341,7 @@ async function obtenerTurnosProximos(
 
 
 
-// Anteriores: todo turno que no sea un reservado futuro (cancelados,
-// no asistió y reservados cuya fecha y hora ya pasaron).
-// Orden: del más reciente al más antiguo.
+
 async function obtenerTurnosAnteriores(
   solicitanteId,
   pacienteId

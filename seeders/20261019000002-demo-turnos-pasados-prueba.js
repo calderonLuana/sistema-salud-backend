@@ -2,21 +2,6 @@
 
 const { QueryTypes } = require('sequelize');
 
-/**
- * ============================================================
- * FUNCIONALIDAD DE PRUEBA - NO APTA PARA PRODUCCIÓN
- * ============================================================
- * Crea turnos pasados, algunos con estado NO_ASISTIO, solo para ver cómo se
- * muestran "Completado" y "No asistió" en "Turnos anteriores".
- *
- * Esta app es exclusivamente para afiliados: ningún endpoint permite marcar
- * un turno como NO_ASISTIO. En un sistema real lo registraría un profesional
- * o la administración desde otra aplicación.
- *
- * Los datos que crea están identificados por profesional, fecha, hora y sede,
- * y el "down" borra únicamente esos.
- */
-
 const SEDES = [
   'Sede Almagro - Av. Corrientes 3500, CABA',
   'Sede Belgrano - Av. Cabildo 2000, CABA',
@@ -30,7 +15,6 @@ const HORARIOS_PASADOS = [
   { profesionalId: 2, fecha: '2026-09-17', hora: '16:20', lugar: SEDES[0] }
 ];
 
-// "horario" es la posición dentro de HORARIOS_PASADOS
 const TURNOS_DE_PRUEBA = [
   { horario: 0, pacienteId: 1, estado: 'RESERVADO' },   // Juan: se muestra "Completado"
   { horario: 1, pacienteId: 1, estado: 'NO_ASISTIO' },  // Juan: "No asistió"
@@ -38,7 +22,6 @@ const TURNOS_DE_PRUEBA = [
   { horario: 3, pacienteId: 3, estado: 'NO_ASISTIO' }   // Pedro: "No asistió"
 ];
 
-// Devuelve el id de cada horario de prueba (null si todavía no existe)
 async function buscarIds(queryInterface) {
   const ids = [];
 
